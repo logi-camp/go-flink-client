@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/flink-go/api"
+	"github.com/logi-camp/go-flink-client"
 )
 
 func main() {

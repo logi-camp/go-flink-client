@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/logi-camp/go-flink-client"
 	"os"
-
-	"github.com/flink-go/api"
 )
 
 func main() {
