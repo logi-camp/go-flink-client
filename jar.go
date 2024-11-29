@@ -195,7 +195,7 @@ func (c *Client) PlanJar(jarid string) (planResp, error) {
 }
 
 type runResp struct {
-	ID string
+	JobId string `json:"jobid"`
 }
 
 type RunOpts struct {
