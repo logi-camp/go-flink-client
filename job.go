@@ -393,17 +393,17 @@ type savePointsResp struct {
 // SavePoints triggers a savepoint, and optionally cancels the
 // job afterwards. This async operation would return a
 // 'triggerid' for further query identifier.
-func (c *Client) SavePoints(jobID string, saveDir string, cancleJob bool) (savePointsResp, error) {
+func (c *Client) SavePoints(jobID string, saveDir string, cancelJob bool) (savePointsResp, error) {
 	var r savePointsResp
 
 	type savePointsReq struct {
 		SaveDir   string `json:"target-directory"`
-		CancleJob bool   `json:"cancel-job"`
+		CancelJob bool   `json:"cancel-job"`
 	}
 
 	d := savePointsReq{
 		SaveDir:   saveDir,
-		CancleJob: cancleJob,
+		CancelJob: cancelJob,
 	}
 	data := new(bytes.Buffer)
 	json.NewEncoder(data).Encode(d)
@@ -412,6 +412,44 @@ func (c *Client) SavePoints(jobID string, saveDir string, cancleJob bool) (saveP
 		"POST",
 		c.url(uri),
 		data,
+	)
+	if err != nil {
+		return r, err
+	}
+	b, err := c.client.Do(req)
+	if err != nil {
+		return r, err
+	}
+	err = json.Unmarshal(b, &r)
+	return r, err
+}
+
+type SavepointStatusId string
+
+const (
+	SavepointStatusInProgress  SavepointStatusId = "IN_PROGRESS"
+	SavepointStatusInCompleted SavepointStatusId = "COMPLETED"
+)
+
+type getSavepointResp struct {
+	Status struct {
+		Id SavepointStatusId `json:"id"`
+	} `json:"status"`
+	Operation struct {
+		FailureCause string `json:"failure-cause"`
+		Location     string `json:"location"`
+	} `json:"operation"`
+}
+
+// Check the status of triggered savepoint
+func (c *Client) TrackSavepoint(jobID string, triggerId string) (getSavepointResp, error) {
+	var r getSavepointResp
+
+	uri := fmt.Sprintf("/jobs/%s/savepoints/%s", jobID, triggerId)
+	req, err := http.NewRequest(
+		"GET",
+		c.url(uri),
+		nil,
 	)
 	if err != nil {
 		return r, err
