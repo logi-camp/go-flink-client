@@ -436,8 +436,8 @@ type getSavepointResp struct {
 		Id SavepointStatusId `json:"id"`
 	} `json:"status"`
 	Operation struct {
-		FailureCause string `json:"failure-cause"`
-		Location     string `json:"location"`
+		FailureCause *string `json:"failure-cause"`
+		Location     string  `json:"location"`
 	} `json:"operation"`
 }
 
