@@ -431,14 +431,22 @@ const (
 	SavepointStatusInCompleted SavepointStatusId = "COMPLETED"
 )
 
+type getSavepointRespFailureCause struct {
+	Class               string `json:"class"`
+	StackTrace          string `json:"stack-trace"`
+	SerializedThrowable string `json:"serialized-throwable"`
+}
+
+type getSavepointRespOperation struct {
+	FailureCause getSavepointRespFailureCause `json:"failure-cause"`
+	Location     string                       `json:"location"`
+}
+type getSavepointRespStatus struct {
+	Id SavepointStatusId `json:"id"`
+}
 type getSavepointResp struct {
-	Status struct {
-		Id SavepointStatusId `json:"id"`
-	} `json:"status"`
-	Operation struct {
-		FailureCause map[string]string `json:"failure-cause"`
-		Location     string            `json:"location"`
-	} `json:"operation"`
+	Status    getSavepointRespStatus    `json:"status"`
+	Operation getSavepointRespOperation `json:"operation"`
 }
 
 // Check the status of triggered savepoint
