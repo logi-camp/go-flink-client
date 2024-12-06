@@ -46,7 +46,7 @@ func (c *Client) Shutdown() error {
 	return err
 }
 
-type configResp struct {
+type ConfigResp struct {
 	RefreshInterval int64    `json:"refresh-interval"`
 	TimezoneName    string   `json:"timezone-name"`
 	TimezoneOffset  int64    `json:"timezone-offset"`
@@ -59,8 +59,8 @@ type features struct {
 }
 
 // Config returns the configuration of the WebUI
-func (c *Client) Config() (configResp, error) {
-	var r configResp
+func (c *Client) Config() (ConfigResp, error) {
+	var r ConfigResp
 	req, err := http.NewRequest("GET", c.url("/config"), nil)
 	if err != nil {
 		return r, err
@@ -73,14 +73,14 @@ func (c *Client) Config() (configResp, error) {
 	return r, err
 }
 
-type uploadResp struct {
+type UploadResp struct {
 	FileName string `json:"filename"`
 	Status   string `json:"status"`
 }
 
 // Upload uploads jar file
-func (c *Client) UploadJar(fpath string) (uploadResp, error) {
-	var r uploadResp
+func (c *Client) UploadJar(fpath string) (UploadResp, error) {
+	var r UploadResp
 	file, err := os.Open(fpath)
 	if err != nil {
 		return r, err
@@ -106,27 +106,27 @@ func (c *Client) UploadJar(fpath string) (uploadResp, error) {
 	return r, err
 }
 
-type jarsResp struct {
+type JarsResp struct {
 	Address string    `json:"address"`
-	Files   []jarFile `json:"files"`
+	Files   []JarFile `json:"files"`
 }
 
-type jarFile struct {
+type JarFile struct {
 	ID       string  `json:"id"`
 	Name     string  `json:"name"`
 	Uploaded int64   `json:"uploaded"`
-	Entries  []entry `json:"entry"`
+	Entries  []Entry `json:"entry"`
 }
 
-type entry struct {
+type Entry struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
 // Jars eturns a list of all jars previously uploaded
 // via '/jars/upload'
-func (c *Client) Jars() (jarsResp, error) {
-	var r jarsResp
+func (c *Client) Jars() (JarsResp, error) {
+	var r JarsResp
 	req, err := http.NewRequest("GET", c.url("/jars"), nil)
 	if err != nil {
 		return r, err
@@ -150,26 +150,26 @@ func (c *Client) DeleteJar(jarid string) error {
 	return err
 }
 
-type planResp struct {
-	Plan plan `json:"plan"`
+type PlanResp struct {
+	Plan Plan `json:"plan"`
 }
 
-type plan struct {
+type Plan struct {
 	JID   string `json:"jid"`
 	Name  string `json:"name"`
-	Nodes []node `json:"nodes"`
+	Nodes []Node `json:"nodes"`
 }
 
-type node struct {
+type Node struct {
 	ID               string  `json:"id"`
 	Parallelism      int     `json:"parallelism"`
 	Operator         string  `json:"operator"`
 	OperatorStrategy string  `json:"operator_strategy"`
 	Description      string  `json:"description"`
-	Inputs           []input `json:"inputs"`
+	Inputs           []Input `json:"inputs"`
 }
 
-type input struct {
+type Input struct {
 	Num          int    `json:"num"`
 	ID           string `json:"id"`
 	ShipStrategy string `json:"ship_strategy"`
@@ -179,8 +179,8 @@ type input struct {
 // PlanJar returns the dataflow plan of a job contained
 // in a jar previously uploaded via '/jars/upload'.
 // Todo: support more args.
-func (c *Client) PlanJar(jarid string) (planResp, error) {
-	var r planResp
+func (c *Client) PlanJar(jarid string) (PlanResp, error) {
+	var r PlanResp
 	uri := fmt.Sprintf("/jars/%s/plan", jarid)
 	req, err := http.NewRequest("GET", c.url(uri), nil)
 	if err != nil {
@@ -194,7 +194,7 @@ func (c *Client) PlanJar(jarid string) (planResp, error) {
 	return r, err
 }
 
-type runResp struct {
+type RunResp struct {
 	JobId string `json:"jobid"`
 }
 
@@ -231,8 +231,8 @@ type RunOpts struct {
 
 // RunJar submits a job by running a jar previously
 // uploaded via '/jars/upload'.
-func (c *Client) RunJar(opts RunOpts) (runResp, error) {
-	var r runResp
+func (c *Client) RunJar(opts RunOpts) (RunResp, error) {
+	var r RunResp
 	uri := fmt.Sprintf("/jars/%s/run", opts.JarID)
 	req, err := http.NewRequest("POST", c.url(uri), nil)
 	q := req.URL.Query()

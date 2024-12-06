@@ -8,15 +8,15 @@ import (
 	"strings"
 )
 
-type kv struct {
+type KV struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
 // JobManagerConfig returns the cluster configuration of
 // job manager server.
-func (c *Client) JobManagerConfig() ([]kv, error) {
-	var r []kv
+func (c *Client) JobManagerConfig() ([]KV, error) {
+	var r []KV
 	req, err := http.NewRequest(
 		"GET",
 		c.url("/jobmanager/config"),
@@ -33,14 +33,14 @@ func (c *Client) JobManagerConfig() ([]kv, error) {
 	return r, err
 }
 
-type metric struct {
+type Metric struct {
 	ID string `json:"id"`
 }
 
 // JobManagerMetrics provides access to job manager
 // metrics.
-func (c *Client) JobManagerMetrics() ([]metric, error) {
-	var r []metric
+func (c *Client) JobManagerMetrics() ([]Metric, error) {
+	var r []Metric
 	req, err := http.NewRequest(
 		"GET",
 		c.url("/jobmanager/metrics"),
@@ -57,19 +57,19 @@ func (c *Client) JobManagerMetrics() ([]metric, error) {
 	return r, err
 }
 
-type jobsResp struct {
-	Jobs []job `json:"jobs"`
+type JobsResp struct {
+	Jobs []Job `json:"jobs"`
 }
 
-type job struct {
+type Job struct {
 	ID     string `json:"id"`
 	Status string `json:"status"`
 }
 
 // Jobs returns an overview over all jobs and their
 // current state.
-func (c *Client) Jobs() (jobsResp, error) {
-	var r jobsResp
+func (c *Client) Jobs() (JobsResp, error) {
+	var r JobsResp
 	req, err := http.NewRequest(
 		"GET",
 		c.url("/jobs"),
@@ -140,11 +140,11 @@ func (c *Client) JobMetrics(opts JobMetricsOpts) (map[string]interface{}, error)
 	return r, err
 }
 
-type overviewResp struct {
-	Jobs []jobOverview `json:"jobs"`
+type OverviewResp struct {
+	Jobs []JobOverview `json:"jobs"`
 }
 
-type jobOverview struct {
+type JobOverview struct {
 	ID               string `json:"jid"`
 	Name             string `json:"name"`
 	State            string `json:"state"`
@@ -152,10 +152,10 @@ type jobOverview struct {
 	End              int64  `json:"end-time"`
 	Duration         int64  `json:"duration"`
 	LastModification int64  `json:"last-modification"`
-	Tasks            status `json:"tasks"`
+	Tasks            Status `json:"tasks"`
 }
 
-type status struct {
+type Status struct {
 	Total       int `json:"total,omitempty"`
 	Created     int `json:"created"`
 	Scheduled   int `json:"scheduled"`
@@ -169,8 +169,8 @@ type status struct {
 }
 
 // JobsOverview returns an overview over all jobs.
-func (c *Client) JobsOverview() (overviewResp, error) {
-	var r overviewResp
+func (c *Client) JobsOverview() (OverviewResp, error) {
+	var r OverviewResp
 	req, err := http.NewRequest(
 		"GET",
 		c.url("/jobs/overview"),
@@ -187,7 +187,7 @@ func (c *Client) JobsOverview() (overviewResp, error) {
 	return r, err
 }
 
-type jobResp struct {
+type JobResp struct {
 	ID          string `json:"jid"`
 	Name        string `json:"name"`
 	IsStoppable bool   `json:"isStoppable"`
@@ -198,26 +198,26 @@ type jobResp struct {
 	Duration int64 `json:"duration"`
 	Now      int64 `json:"now"`
 
-	Timestamps   timestamps `json:"timestamps"`
-	Vertices     []vertice  `json:"vertices"`
-	StatusCounts status     `json:"status-counts"`
-	Plan         plan       `json:"plan"`
+	Timestamps   Timestamps `json:"timestamps"`
+	Vertices     []Vertice  `json:"vertices"`
+	StatusCounts Status     `json:"status-counts"`
+	Plan         Plan       `json:"plan"`
 }
 
-type timestamps struct {
+type Timestamps struct {
 	Canceled    int64 `json:"CANCELED"`
 	Suspended   int64 `json:"SUSPENDED"`
 	Finished    int64 `json:"FINISHED"`
 	Canceling   int64 `json:"CANCELLING"`
 	Running     int64 `json:"RUNNING"`
-	Restaring   int64 `json:"RESTARTING"`
+	Restarting  int64 `json:"RESTARTING"`
 	Reconciling int64 `json:"RECONCILING"`
 	Created     int64 `json:"CREATED"`
 	Failed      int64 `json:"FAILED"`
 	Failing     int64 `json:"FAILING"`
 }
 
-type vertice struct {
+type Vertice struct {
 	ID          string                 `json:"id"`
 	Name        string                 `json:"name"`
 	Status      string                 `json:"status"`
@@ -225,13 +225,13 @@ type vertice struct {
 	Start       int64                  `json:"start-time"`
 	End         int64                  `json:"end-time"`
 	Duration    int64                  `json:"duration"`
-	Tasks       status                 `json:"tasks"`
+	Tasks       Status                 `json:"tasks"`
 	Metrics     map[string]interface{} `json:"metrics"`
 }
 
 // Job returns details of a job.
-func (c *Client) Job(jobID string) (jobResp, error) {
-	var r jobResp
+func (c *Client) Job(jobID string) (JobResp, error) {
+	var r JobResp
 	uri := fmt.Sprintf("/jobs/%s", jobID)
 	req, err := http.NewRequest(
 		"GET",
@@ -265,13 +265,13 @@ func (c *Client) StopJob(jobID string) error {
 }
 
 type checkpointsResp struct {
-	Counts  counts                     `json:"counts"`
-	Summary summary                    `json:"summary"`
-	Latest  latest                     `json:"latest"`
+	Counts  Counts                     `json:"counts"`
+	Summary Summary                    `json:"summary"`
+	Latest  Latest                     `json:"latest"`
 	History []failedCheckpointsStatics `json:"history"`
 }
 
-type counts struct {
+type Counts struct {
 	Restored   int `json:"restored"`
 	Total      int `json:"total"`
 	InProgress int `json:"in_progress"`
@@ -279,8 +279,8 @@ type counts struct {
 	Failed     int `json:"failed"`
 }
 
-type summary struct {
-	StateSize         statics `json:"state_size`
+type Summary struct {
+	StateSize         statics `json:"state_size"`
 	End2EndDuration   statics `json:"end_to_end_duration"`
 	AlignmentBuffered statics `json:"alignment_buffered"`
 }
@@ -291,14 +291,14 @@ type statics struct {
 	Avg int `json:"avg"`
 }
 
-type latest struct {
-	Completed completedCheckpointsStatics `json:"completed"`
+type Latest struct {
+	Completed CompletedCheckpointsStatics `json:"completed"`
 	Savepoint savepointsStatics           `json:"savepoint"`
 	Failed    failedCheckpointsStatics    `json:"failed"`
 	Restored  restoredCheckpointsStatics  `json:"restored"`
 }
 
-type completedCheckpointsStatics struct {
+type CompletedCheckpointsStatics struct {
 	ID                      string                 `json:"id"`
 	Status                  string                 `json:"status"`
 	IsSavepoint             bool                   `json:"is_savepoint"`
@@ -309,7 +309,7 @@ type completedCheckpointsStatics struct {
 	AlignmentBuffered       int64                  `json:"alignment_buffered"`
 	NumSubtasks             int64                  `json:"num_subtasks"`
 	NumAcknowledgedSubtasks int64                  `json:"num_acknowledged_subtasks"`
-	tasks                   taskCheckpointsStatics `json:"tasks"`
+	Tasks                   TaskCheckpointsStatics `json:"tasks"`
 	ExternalPath            string                 `json:"external_path"`
 	Discarded               bool                   `json:"discarded"`
 }
@@ -325,11 +325,11 @@ type savepointsStatics struct {
 	AlignmentBuffered       int64                  `json:"alignment_buffered"`
 	NumSubtasks             int64                  `json:"num_subtasks"`
 	NumAcknowledgedSubtasks int64                  `json:"num_acknowledged_subtasks"`
-	tasks                   taskCheckpointsStatics `json:"tasks"`
+	Tasks                   TaskCheckpointsStatics `json:"tasks"`
 	ExternalPath            string                 `json:"external_path"`
 	Discarded               bool                   `json:"discarded"`
 }
-type taskCheckpointsStatics struct {
+type TaskCheckpointsStatics struct {
 	ID     string `json:"id"`
 	Status string `json:"status"`
 
@@ -356,7 +356,7 @@ type failedCheckpointsStatics struct {
 	AlignmentBuffered       int64                  `json:"alignment_buffered"`
 	NumSubtasks             int64                  `json:"num_subtasks"`
 	NumAcknowledgedSubtasks int64                  `json:"num_acknowledged_subtasks"`
-	tasks                   taskCheckpointsStatics `json:"tasks"`
+	Tasks                   TaskCheckpointsStatics `json:"tasks"`
 }
 
 type restoredCheckpointsStatics struct {
@@ -386,22 +386,22 @@ func (c *Client) Checkpoints(jobID string) (checkpointsResp, error) {
 	return r, err
 }
 
-type savePointsResp struct {
+type SavePointsResp struct {
 	RequestID string `json:"request-id"`
 }
 
 // SavePoints triggers a savepoint, and optionally cancels the
 // job afterwards. This async operation would return a
 // 'triggerid' for further query identifier.
-func (c *Client) SavePoints(jobID string, saveDir string, cancelJob bool) (savePointsResp, error) {
-	var r savePointsResp
+func (c *Client) SavePoints(jobID string, saveDir string, cancelJob bool) (SavePointsResp, error) {
+	var r SavePointsResp
 
-	type savePointsReq struct {
+	type SavePointsReq struct {
 		SaveDir   string `json:"target-directory"`
 		CancelJob bool   `json:"cancel-job"`
 	}
 
-	d := savePointsReq{
+	d := SavePointsReq{
 		SaveDir:   saveDir,
 		CancelJob: cancelJob,
 	}
@@ -431,27 +431,27 @@ const (
 	SavepointStatusInCompleted SavepointStatusId = "COMPLETED"
 )
 
-type getSavepointRespFailureCause struct {
+type TrackSavepointRespFailureCause struct {
 	Class               string `json:"class"`
 	StackTrace          string `json:"stack-trace"`
 	SerializedThrowable string `json:"serialized-throwable"`
 }
 
-type getSavepointRespOperation struct {
-	FailureCause getSavepointRespFailureCause `json:"failure-cause"`
-	Location     string                       `json:"location"`
+type TrackSavepointRespOperation struct {
+	FailureCause TrackSavepointRespFailureCause `json:"failure-cause"`
+	Location     string                         `json:"location"`
 }
-type getSavepointRespStatus struct {
+type TrackSavepointRespStatus struct {
 	Id SavepointStatusId `json:"id"`
 }
-type getSavepointResp struct {
-	Status    getSavepointRespStatus    `json:"status"`
-	Operation getSavepointRespOperation `json:"operation"`
+type TrackSavepointResp struct {
+	Status    TrackSavepointRespStatus    `json:"status"`
+	Operation TrackSavepointRespOperation `json:"operation"`
 }
 
 // Check the status of triggered savepoint
-func (c *Client) TrackSavepoint(jobID string, triggerId string) (getSavepointResp, error) {
-	var r getSavepointResp
+func (c *Client) TrackSavepoint(jobID string, triggerId string) (TrackSavepointResp, error) {
+	var r TrackSavepointResp
 
 	uri := fmt.Sprintf("/jobs/%s/savepoints/%s", jobID, triggerId)
 	req, err := http.NewRequest(
@@ -470,7 +470,7 @@ func (c *Client) TrackSavepoint(jobID string, triggerId string) (getSavepointRes
 	return r, err
 }
 
-type stopJobResp struct {
+type StopJobResp struct {
 	RequestID string `json:"request-id"`
 }
 
@@ -478,14 +478,14 @@ type stopJobResp struct {
 // emit a MAX_WATERMARK before taking the savepoint to flush out
 // any state waiting for timers to fire. This async operation
 // would return a 'triggerid' for further query identifier.
-func (c *Client) StopJobWithSavepoint(jobID string, saveDir string, drain bool) (stopJobResp, error) {
-	var r stopJobResp
-	type stopJobReq struct {
+func (c *Client) StopJobWithSavepoint(jobID string, saveDir string, drain bool) (StopJobResp, error) {
+	var r StopJobResp
+	type StopJobReq struct {
 		SaveDir string `json:"targetDirectory"`
 		Drain   bool   `json:"drain"`
 	}
 
-	d := stopJobReq{
+	d := StopJobReq{
 		SaveDir: saveDir,
 		Drain:   drain,
 	}
