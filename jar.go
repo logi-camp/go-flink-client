@@ -215,8 +215,8 @@ type RunOpts struct {
 	// job from.
 	SavepointPath string
 
-	// programArg (optional): list of program arguments.
-	ProgramArg []string
+	// programArgsList (optional): list of program arguments.
+	ProgramArgsList []string
 
 	// EntryClass (optional): String value that specifies
 	// the fully qualified name of the entry point class.
@@ -240,8 +240,8 @@ func (c *Client) RunJar(opts RunOpts) (RunResp, error) {
 		q.Add("savepointPath", opts.SavepointPath)
 		q.Add("allowNonRestoredState", strconv.FormatBool(opts.AllowNonRestoredState))
 	}
-	if len(opts.ProgramArg) > 0 {
-		q.Add("programArg", strings.Join(opts.ProgramArg, ","))
+	for _, arg := range opts.ProgramArgsList {
+		q.Add("programArgsList", arg)
 	}
 	if opts.EntryClass != "" {
 		q.Add("entry-class", opts.EntryClass)
